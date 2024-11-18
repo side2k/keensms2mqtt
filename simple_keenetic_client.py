@@ -24,6 +24,7 @@ class KeeneticAPI:
         await self.close()
 
     async def connect(self):
+        logger.debug("Connecting to {self._base_url}")
         self._session = aiohttp.ClientSession()
         await self.login(self._username, self._password)
 
