@@ -34,6 +34,6 @@ def deep_merge(dict1, dict2):
         if value1_is_dict and value2_is_dict:
             result[key] = deep_merge(value1, value2)
         else:
-            result[key] = value2 or value1
+            result[key] = value2 if value2 is not None else value1
 
     return result
