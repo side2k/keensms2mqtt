@@ -1,6 +1,8 @@
 import asyncio
+import json
 import logging
 import os
+from datetime import datetime
 
 import yaml
 
@@ -17,7 +19,10 @@ class KeenSMS2MQTT:
             "host": "router.local",
             "username": "admin",
             "password": "admin",
-        }
+            "mark_as_read": True,
+            "datetime_format": "%a %b %d %H:%M:%S %Y",
+        },
+        "access": {"phones": []},
     }
     client = None
 
@@ -113,24 +118,41 @@ class KeenSMS2MQTT:
 
         return messages
 
-    async def process_message(self, msg) -> bool:
+    async def process_message(self, msg_id, msg) -> bool:
         """Returns True if message fits criterias to be processed, so can be deleted
         after function was successfully executed
         """
-        if msg["from"] in self.get_setting("access.phones", []):
-            logger.info(
-                f"Executing script for message: {msg['from']=}, {msg['text']=} "
-            )
+        logger.debug(f"Processing message: {msg}")
+        if msg["from"] in self.get_setting("access.phones"):
+            serialized_msg = self.serialize_sms(msg_id, msg)
+            logger.info(f"Executing script for message: {serialized_msg=} ")
             return True
         return False
 
     async def process_messages(self, unread_messages):
         to_be_marked_read = {}
         for if_name, msg_id, msg in unread_messages:
-            is_processed = await self.process_message(msg)
+            is_processed = await self.process_message(msg_id, msg)
             if is_processed:
                 by_interface = to_be_marked_read.setdefault(if_name, [])
                 by_interface.append(msg_id)
 
+        if not self.get_setting("keenetic.mark_as_read"):
+            return
+
         for interface_name, msg_ids in to_be_marked_read.items():
             await self.client.mark_sms_as_read(interface_name, msg_ids)
+
+    def serialize_sms(self, msg_id, msg):
+        timestamp = datetime.strptime(
+            msg["timestamp"], self.get_setting("keenetic.datetime_format")
+        )
+        return json.dumps(
+            {
+                "id": msg_id,
+                "from": msg["from"],
+                "text": msg["text"],
+                "timestamp": timestamp.isoformat(),
+            },
+            ensure_ascii=False,
+        )
