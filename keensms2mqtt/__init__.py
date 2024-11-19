@@ -78,10 +78,7 @@ class KeenSMS2MQTT:
 
         return True
 
-    async def run(self):
-        if not self.config_is_valid():
-            raise Exception("Invalid configuration")
-
+    async def sms_fetch_loop(self):
         base_url = host_root_url(self.get_setting("keenetic.host"))
         logger.info(f"Connecting to {base_url=}")
 
@@ -104,6 +101,14 @@ class KeenSMS2MQTT:
                 logger.debug(f"{unread_messages=}")
                 await self.process_messages(unread_messages)
                 await asyncio.sleep(request_interval)
+
+    async def run(self):
+        if not self.config_is_valid():
+            raise Exception("Invalid configuration")
+
+        await asyncio.gather(
+            self.sms_fetch_loop(),
+        )
 
     async def get_unread_sms(self, interface_names):
 
