@@ -23,6 +23,13 @@ class KeenSMS2MQTT:
             "datetime_format": "%a %b %d %H:%M:%S %Y",
         },
         "access": {"phones": []},
+        "mqtt": {
+            "host": "mqtt.local",
+            "port": 1883,
+            "topic": "keensms/messages",
+            "subscriber_id": "keensms-subscriber",
+            "publisher_id": "keensms-publisher",
+        },
     }
     client = None
 
