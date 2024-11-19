@@ -4,8 +4,10 @@ import logging
 import os
 from datetime import datetime
 
+import aiomqtt
 import yaml
 
+from keensms2mqtt.mqtt import create_stub_session
 from keensms2mqtt.utils import deep_merge, host_root_url
 from simple_keenetic_client import KeeneticAPI
 
@@ -109,6 +111,19 @@ class KeenSMS2MQTT:
                 await self.process_messages(unread_messages)
                 await asyncio.sleep(request_interval)
 
+    async def mqtt_publish(self, payload, qos=1):
+        host = self.get_setting("mqtt.host")
+        port = self.get_setting("mqtt.port")
+        topic = self.get_setting("mqtt.topic")
+        subscriber_id = self.get_setting("mqtt.subscriber_id")
+        publisher_id = self.get_setting("mqtt.publisher_id")
+
+        await create_stub_session(host, port, subscriber_id, topic)
+        async with aiomqtt.Client(
+            host, port=port, identifier=publisher_id, clean_session=False
+        ) as publisher:
+            await publisher.publish(topic, payload, qos=qos)
+
     async def run(self):
         if not self.config_is_valid():
             raise Exception("Invalid configuration")
@@ -137,7 +152,7 @@ class KeenSMS2MQTT:
         logger.debug(f"Processing message: {msg}")
         if msg["from"] in self.get_setting("access.phones"):
             serialized_msg = self.serialize_sms(msg_id, msg)
-            logger.info(f"Executing script for message: {serialized_msg=} ")
+            await self.mqtt_publish(serialized_msg)
             return True
         return False
 
