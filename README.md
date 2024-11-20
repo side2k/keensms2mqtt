@@ -12,6 +12,8 @@ Simple service that reads SMS messages from KeeneticOS-based router(that has mob
 
 `keensms2mqtt.yaml`:
 ```yaml
+logging:
+  debug: true
 keenetic:
   host: "router.local"
   username: "admin"
