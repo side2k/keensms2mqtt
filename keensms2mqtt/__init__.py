@@ -16,6 +16,9 @@ logger = logging.getLogger(__name__)
 
 class KeenSMS2MQTT:
     DEFAULT_CONFIG = {
+        "logging": {
+            "debug": False,
+        },
         "keenetic": {
             "request_interval": 5,
             "host": "router.local",

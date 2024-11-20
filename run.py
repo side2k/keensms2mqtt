@@ -14,6 +14,8 @@ async def main():
         logger.error("Configuration error, exiting")
         exit(1)
         return
+    if tool.get_setting("logging.debug"):
+        logging.basicConfig(level=logging.DEBUG)
 
     await tool.run()
 
