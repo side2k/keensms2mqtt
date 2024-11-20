@@ -23,10 +23,9 @@ keenetic:
 mqtt:
   host: "mqtt-server.home"
   topic: "keensms/messages"
-  # before publishing any message, subscription
-  # request with the given subscriber_id will be
-  # issued, to ensure MQTT broker  stores published
-  # messages
+  # if subscriber_id is set, before publishing any message, subscription
+  # request with the given subscriber_id will be issued, to ensure MQTT
+  # broker stores published messages
   subscriber_id: "keensms-subscriber"
 access:
   # only SMS from phones listed here will be processed
