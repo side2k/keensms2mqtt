@@ -38,6 +38,9 @@ class KeenSMS2MQTT:
 
     def __init__(self):
         self.get_config()
+        # cache for messages that we do not want to process (e.g. from unknown numbers),
+        # but also do not want to mark them read or delete
+        self._cache_for_skipped = set()
 
     def get_config(self) -> dict:
         config = {}
@@ -162,10 +165,14 @@ class KeenSMS2MQTT:
         processed = {}
 
         for if_name, msg_id, msg in unread_messages:
+            if msg_id in self._cache_for_skipped:
+                continue
             is_processed = await self.process_message(msg_id, msg)
             if is_processed:
                 by_interface = processed.setdefault(if_name, [])
                 by_interface.append(msg_id)
+            else:
+                self._cache_for_skipped.add(msg_id)
 
         if self.get_setting("keenetic.delete_processed"):
             for interface_name, msg_ids in processed.items():
