@@ -22,6 +22,7 @@ class KeenSMS2MQTT:
             "username": "admin",
             "password": "admin",
             "mark_as_read": True,
+            "delete_processed": False,
             "datetime_format": "%a %b %d %H:%M:%S %Y",
         },
         "access": {"phones": []},
@@ -158,18 +159,22 @@ class KeenSMS2MQTT:
         return False
 
     async def process_messages(self, unread_messages):
-        to_be_marked_read = {}
+        processed = {}
+
         for if_name, msg_id, msg in unread_messages:
             is_processed = await self.process_message(msg_id, msg)
             if is_processed:
-                by_interface = to_be_marked_read.setdefault(if_name, [])
+                by_interface = processed.setdefault(if_name, [])
                 by_interface.append(msg_id)
 
-        if not self.get_setting("keenetic.mark_as_read"):
+        if self.get_setting("keenetic.delete_processed"):
+            for interface_name, msg_ids in processed.items():
+                await self.client.delete_sms(interface_name, msg_ids)
             return
 
-        for interface_name, msg_ids in to_be_marked_read.items():
-            await self.client.mark_sms_as_read(interface_name, msg_ids)
+        if self.get_setting("keenetic.mark_as_read"):
+            for interface_name, msg_ids in processed.items():
+                await self.client.mark_sms_as_read(interface_name, msg_ids)
 
     def serialize_sms(self, msg_id, msg):
         timestamp = datetime.strptime(
