@@ -34,3 +34,46 @@ access:
     - "+79010012345"
 
 ```
+
+## Connecting to Home Assistant
+
+Can be done via [MQTT integration](https://www.home-assistant.io/integrations/mqtt/).
+
+- event configuration example:
+```yaml
+mqtt:
+  - event:
+      name: "sms message"
+      state_topic: "keensms/messages"
+      qos: 1
+      event_types:
+        - sms_message
+      value_template: |
+        {
+          "event_type": "sms_message",
+          "from": "{{ value_json.from }}",
+          "text": "{{ value_json.text }}"
+        }
+```
+
+- automation example. Personally, I'm using [Yandex.Station automation](https://github.com/AlexxIT/YandexStation) via [HACS](https://www.hacs.xyz/), but hopefully you'll find enough data in this demo to use it whenever you want:
+```yaml
+automation:
+  - id: '123456789'
+    alias: autotest-ui
+    description: 'SMS message notification'
+    triggers:
+    - trigger: event
+      event_type: state_changed
+      event_data:
+        entity_id: event.sms_message
+    conditions: []
+    actions:
+    - action: media_player.play_media
+      metadata: {}
+      data:
+        media_content_type: text
+        media_content_id: received SMS message {{ trigger.event.data.new_state.attributes.text }}
+      target:
+        device_id: 12345abcdef
+```
