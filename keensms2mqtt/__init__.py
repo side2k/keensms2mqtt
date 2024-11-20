@@ -29,7 +29,6 @@ class KeenSMS2MQTT:
             "host": "mqtt.local",
             "port": 1883,
             "topic": "keensms/messages",
-            "subscriber_id": "keensms-subscriber",
             "publisher_id": "keensms-publisher",
         },
     }
