@@ -124,3 +124,15 @@ class KeeneticAPI:
             },
         )
         return await response.json()
+
+    async def delete_sms(self, interface_name: str, msg_ids: list[str]):
+        response = await self.post(
+            "/rci/",
+            data={
+                "sms": {
+                    "interface": interface_name,
+                    "delete": [{"id": msg_id} for msg_id in msg_ids],
+                }
+            },
+        )
+        return await response.json()
