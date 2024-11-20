@@ -63,11 +63,11 @@ class KeenSMS2MQTT:
         path_len = len(parts)
         for part_index, part in enumerate(parts):
             scope = scope.get(part)
+            if part_index == path_len - 1:
+                return scope
             if scope is None:
                 logger.debug(f"setting {setting_path} not found")
                 return None
-            if part_index == path_len - 1:
-                return scope
 
             if not issubclass(type(scope), dict):
                 return None
