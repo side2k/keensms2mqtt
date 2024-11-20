@@ -63,7 +63,7 @@ class KeenSMS2MQTT:
         for part_index, part in enumerate(parts):
             scope = scope.get(part)
             if scope is None:
-                logger.warning("setting {setting_path} not found")
+                logger.debug(f"setting {setting_path} not found")
                 return None
             if part_index == path_len - 1:
                 return scope
