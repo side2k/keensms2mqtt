@@ -118,7 +118,8 @@ class KeenSMS2MQTT:
         subscriber_id = self.get_setting("mqtt.subscriber_id")
         publisher_id = self.get_setting("mqtt.publisher_id")
 
-        await create_stub_session(host, port, subscriber_id, topic)
+        if subscriber_id:
+            await create_stub_session(host, port, subscriber_id, topic)
         async with aiomqtt.Client(
             host, port=port, identifier=publisher_id, clean_session=False
         ) as publisher:
