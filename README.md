@@ -35,6 +35,41 @@ access:
     - "+79010012345"
 
 ```
+## Running
+
+For now this project can be run only as a standalone application.
+
+### Running with bare Python
+
+If you're familiar with Python and do not afraid to use Poetry, here is the simple and short solution, that requires only Python 3.11 or higher installed:
+
+```bash
+# go to the project dir
+cd keensms2mqtt
+
+# installing Poetry (https://python-poetry.org/docs/)
+curl -sSL https://install.python-poetry.org | python3 -
+
+# creating environment and installing dependencies
+poetry install
+
+# running keensms2mqtt
+poetry run python run.py
+```
+
+### Using Docker Compose
+
+This is shorter and simpler, but requires [Docker](https://docs.docker.com/engine/install/) and [Docker Compose](https://docs.docker.com/compose/) installed
+
+```bash
+docker compose up keensms2mqtt
+```
+
+On first run, it will build an image, which takes some time. Then it will simply run. To run it in background mode, just use `-d` switch:
+
+```bash
+docker compose up -d keensms2mqtt
+```
 
 ## Connecting to Home Assistant
 
