@@ -1,0 +1,7 @@
+services:
+  keensms2mqtt:
+    image: keensms2mqtt
+    build:
+      context: .
+    volumes:
+      - .:/app

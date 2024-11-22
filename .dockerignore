@@ -1,0 +1,14 @@
+.flake8
+/.git/
+/.gitignore
+/.venv/
+/.vscode/
+/Dockerfile
+/samples/
+**/__pycache__/
+
+/*.py
+!/run.py
+!/simple_keenetic_client.py
+
+keensms2mqtt.yaml
