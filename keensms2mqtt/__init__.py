@@ -6,10 +6,10 @@ from datetime import datetime
 
 import aiomqtt
 import yaml
+from simple_keenetic_client import SimpleKeeneticClient
 
 from keensms2mqtt.mqtt import create_stub_session
 from keensms2mqtt.utils import deep_merge, host_root_url
-from simple_keenetic_client import KeeneticAPI
 
 logger = logging.getLogger(__name__)
 
@@ -98,7 +98,7 @@ class KeenSMS2MQTT:
         base_url = host_root_url(self.get_setting("keenetic.host"))
         logger.info(f"Connecting to {base_url=}")
 
-        async with KeeneticAPI(
+        async with SimpleKeeneticClient(
             base_url,
             username=self.get_setting("keenetic.username"),
             password=self.get_setting("keenetic.password"),
